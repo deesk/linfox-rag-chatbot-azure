@@ -45,7 +45,7 @@ resource search 'Microsoft.Search/searchServices@2024-06-01-preview' = {
   location: location
   tags: tags  
   sku: {
-    name: 'basic'
+    name: 'free'
   }
   identity: searchIdentityProvider  
   properties: {
