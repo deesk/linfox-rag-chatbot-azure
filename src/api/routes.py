@@ -102,18 +102,11 @@ async def chat_stream_handler(
     async def response_stream():
         messages = [{"role": message.role, "content": message.content} for message in chat_request.messages]
 
-        prompt_messages = PromptTemplate.from_string('You are a helpful assistant').create_messages()
+        prompt_messages = PromptTemplate.from_string('You are a Melbourne logistics operations assistant for Linfox Australia.').create_messages()
         # Use RAG model, only if we were provided index and we have found a context there.
         if search_index_manager is not None:
             context = await search_index_manager.search(chat_request)
             if context:
-                prompt_messages = PromptTemplate.from_string(
-                    'You are a Melbourne logistics operations assistant for Linfox Australia. '
-                    'You help drivers, depot staff and operations managers with delivery zones, '
-                    'shift times, freight types and escalation procedures.\n\nHere is '
-                    'the context data:\n\n{{context}}').create_messages(data=dict(context=context))
-            else:
-                logger.info("Unable to find the relevant information in the index for the request.")
                 prompt_messages = PromptTemplate.from_string(
                     'You are a Melbourne logistics operations assistant for Linfox Australia. '
                     'You help drivers, depot staff and operations managers with delivery zones, '
@@ -124,6 +117,14 @@ async def chat_stream_handler(
                     '"I\'m sorry, I can only answer questions related to Melbourne logistics operations." '
                     '\n\nHere is the context data:\n\n{{context}}'
                 ).create_messages(data=dict(context=context))
+            else:
+                logger.info("Unable to find the relevant information in the index for the request.")
+                prompt_messages = PromptTemplate.from_string(
+                       'You are a Melbourne logistics operations assistant for Linfox Australia. '
+                       'You must ONLY answer questions related to Melbourne logistics operations. '
+                       'Respond ONLY with: "I\'m sorry, I can only answer questions related to '
+                       'Melbourne logistics operations. Please contact your depot supervisor."'
+                ).create_messages()
         try:
             accumulated_message = ""
             chat_coroutine = await chat_client.complete(
