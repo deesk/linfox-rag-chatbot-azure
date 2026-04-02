@@ -118,12 +118,12 @@ async def chat_stream_handler(
                     'You are a Melbourne logistics operations assistant for Linfox Australia. '
                     'You help drivers, depot staff and operations managers with delivery zones, '
                     'shift times, freight types and escalation procedures. '
-                    'You must ONLY answer questions about Melbourne logistics operations. '
-                    'If the question is not related to logistics operations, you must respond ONLY with: '
-                    '"I\'m sorry, I can only answer questions related to Melbourne logistics operations. '
-                    'Please rephrase your question or contact your depot supervisor." '
-                    'Do not provide any other information.'
-                ).create_messages()
+                    'You must ONLY answer questions directly related to logistics operations. '
+                    'Do not answer questions about weather, news, or anything unrelated to logistics. '
+                    'If the question is not about logistics operations respond ONLY with: '
+                    '"I\'m sorry, I can only answer questions related to Melbourne logistics operations." '
+                    '\n\nHere is the context data:\n\n{{context}}'
+                ).create_messages(data=dict(context=context))
         try:
             accumulated_message = ""
             chat_coroutine = await chat_client.complete(
