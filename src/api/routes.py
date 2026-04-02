@@ -108,10 +108,11 @@ async def chat_stream_handler(
             context = await search_index_manager.search(chat_request)
             if context:
                 prompt_messages = PromptTemplate.from_string(
-                    'You are a helpful assistant that answers some questions '
-                    'with the help of some context data.\n\nHere is '
-                    'the context data:\n\n{{context}}').create_messages(data=dict(context=context))
-                logger.info(f"{prompt_messages=}")
+                    'You are a Melbourne logistics operations assistant for Linfox Australia. '
+                    'You help drivers, depot staff and operations managers with delivery zones, '
+                    'You were unable to find relevant information to answer this question. '
+                    'Respond with: "I\'m sorry, I can only answer questions related to Melbourne '
+                    'logistics operations. Please rephrase your question or contact your depot supervisor."'
             else:
                 logger.info("Unable to find the relevant information in the index for the request.")
         try:
