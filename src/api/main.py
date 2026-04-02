@@ -12,6 +12,7 @@ from azure.ai.projects.aio import AIProjectClient
 from azure.ai.inference.aio import ChatCompletionsClient, EmbeddingsClient
 from azure.identity import AzureDeveloperCliCredential, ManagedIdentityCredential
 from dotenv import load_dotenv
+from .util import get_logger
 from fastapi.staticfiles import StaticFiles
 
 
