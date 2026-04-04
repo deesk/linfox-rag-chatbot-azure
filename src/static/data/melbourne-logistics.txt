@@ -41,12 +41,12 @@ ESCALATION PROCESS:
 - Level 4: State manager contacts national operations
 
 LOADING ZONES:
-- Zone 1 (Port Melbourne): Container handling and maritime freight, 24/7 operations
-- Zone 2 (Altona): Chemical and hazardous materials loading, ADG certified staff required
-- Zone 3 (Sunshine): General freight loading dock, capacity 20 pallets per bay
-- Zone 4 (Campbellfield): Automotive parts and manufacturing components loading
-- Zone 5 (Epping): Fresh produce and perishables loading, temperature controlled bays
-- Zone 6 (Dandenong): Retail distribution loading, peak hours 6am-10am
-- Zone 7 (Laverton): Heavy machinery and oversized freight, crane facilities available
+- Zone A (Port Melbourne): Container handling and maritime freight, 24/7 operations
+- Zone B (Altona): Chemical and hazardous materials loading, ADG certified staff required
+- Zone C (Sunshine): General freight loading dock, capacity 20 pallets per bay
+- Zone D (Campbellfield): Automotive parts and manufacturing components loading
+- Zone E (Epping): Fresh produce and perishables loading, temperature controlled bays
+- Zone F (Dandenong): Retail distribution loading, peak hours 6am-10am
+- Zone G (Laverton): Heavy machinery and oversized freight, crane facilities available
 
 ```
