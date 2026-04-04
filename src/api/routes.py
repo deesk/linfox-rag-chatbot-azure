@@ -110,9 +110,8 @@ async def chat_stream_handler(
                 prompt_messages = PromptTemplate.from_string(
                     'You are a Melbourne logistics operations assistant for Linfox Australia. '
                     'You must ONLY answer questions based on the context data provided. '
-                    'If the answer is not in the context data, respond with: '
-                    '"I\'m sorry, I don\'t have that information in my knowledge base. '
-                    'Please contact your depot supervisor for assistance." '
+                    'After your answer, add a new line and write: Context used: "..." '
+                    'showing exactly what information you used to formulate your answer.'
                     '\n\nHere is the context data:\n\n{{context}}'
                 ).create_messages(data=dict(context=context))
             else:
