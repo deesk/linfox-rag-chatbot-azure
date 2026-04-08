@@ -1,8 +1,6 @@
 # RAG Behaviour Analysis Report
 
 **Project:** Linfox Melbourne Logistics RAG Chatbot  
-**Author:** Sandesh (GitHub: deesk)  
-
 ---
 
 <div align="center"><a href="images/rag_analysis/rag_inforgraph.png"><img src="images/rag_analysis/rag_inforgraph.png" width="80%"></a></div>
@@ -206,7 +204,7 @@ Returned: delivery zones 1-4 correctly but also included loading zones D, E, F, 
 
 Why it bled: Loading zones D through G are Melbourne suburb names. These same suburbs appear in the delivery zone content. In my view the shared suburb vocabulary brings their vectors close enough to make the top 5 chunks for a delivery zones query, despite using distinct alphabetic zone labels.
 
-<a href="images/rag_analysis/part2/p2-t1_delivery_zones_bleeding.png"><img src="images/rag_analysis/part2/p2-t1_delivery_zones_bleeding.png" width="100%"></a>
+<div align="center"><a href="images/rag_analysis/part2/p2-t1_delivery_zones_bleeding.png"><img src="images/rag_analysis/part2/p2-t1_delivery_zones_bleeding.png" width="100%"></a></div>
 
 **Test 2: isolated "all zones"**
 
