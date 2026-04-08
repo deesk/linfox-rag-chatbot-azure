@@ -5,7 +5,7 @@
 
 ---
 
-<a href="images/rag_analysis/rag_inforgraph.png"><img src="images/rag_analysis/rag_inforgraph.png" width="100%"></a>
+<a href="images/rag_analysis/rag_inforgraph.png"><img src="images/rag_analysis/rag_inforgraph.png" width="80%"></a>
 
 ## TL;DR
 
@@ -46,9 +46,10 @@ Technical flow:
 
 Key constraint: GPT only sees the top 5 chunks. Answers in chunk 6 or beyond are never retrieved.
 
-<a href="images/rag_analysis/d1_rag_query_flow.png"><img src="images/rag_analysis/d1_rag_query_flow.png" width="100%"></a>
-
-<a href="images/rag_analysis/d2_data_pipeline.png"><img src="images/rag_analysis/d2_data_pipeline.png" width="100%"></a>
+<table><tr>
+<td><a href="images/rag_analysis/d1_rag_query_flow.png"><img src="images/rag_analysis/d1_rag_query_flow.png" width="45%"></a></td>
+<td><a href="images/rag_analysis/d2_data_pipeline.png"><img src="images/rag_analysis/d2_data_pipeline.png" width="45%"></a></td>
+</tr></table>
 
 ---
 
@@ -111,19 +112,14 @@ Loading zones added for testing: 7
 
 "delivery zones"
 Returned all 4 zones.
-
 "driver shift times"
 Returned all 4 shifts.
-
 "escalation process"
 Returned all 4 levels.
-
 "depot locations"
 Returned all 3 depots.
-
 "common delay reasons"
 Returned only 2 of 4.
-
 "freight types"
 Returned only 3 of 4.
 
@@ -135,7 +131,7 @@ Returned: Ambient, Cold chain, Frozen. Dangerous goods missing.
 
 GPT presented 3 freight types with full confidence, unaware a 4th exists. No signal to the user that information was missing.
 
-<a href="images/rag_analysis/part1/p1-ss1_freight-types.png"><img src="images/rag_analysis/part1/p1-ss1_freight-types.png" width="100%"></a>
+<a href="images/rag_analysis/part1/p1-ss1_freight-types.png"><img src="images/rag_analysis/part1/p1-ss1_freight-types.png" width="80%"></a>
 
 Looking at the chunk data from `embeddings.csv`, the root cause appears to be the fixed-size chunking boundary. The 4-sentence cut placed "Dangerous goods" into a different chunk alongside delay reason content:
 
@@ -156,7 +152,7 @@ Embedding: [-0.001, 0.067, 0.124, -0.000, -0.012, 0.125, -0.096, -0.045 ...]
 
 Chunk 5 contains three unrelated topics mixed together. In my view, when converted to a vector, the meaning gets pulled in multiple directions at once, like mixing too many paint colours and ending up with a muddy result that does not clearly represent any single colour. My hypothesis is that the vector is not strongly associated with freight types or delay reasons, so it scores lower than expected for either query and may not make the top 5.
 
-<a href="images/rag_analysis/part1/chunking_problem.png"><img src="images/rag_analysis/part1/chunking_problem.png" width="100%"></a>
+<div align="center"><a href="images/rag_analysis/part1/chunking_problem.png"><img src="images/rag_analysis/part1/chunking_problem.png" width="60%"></a></div>
 
 ### Missing data: Common delay reasons
 
