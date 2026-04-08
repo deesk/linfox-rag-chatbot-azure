@@ -1,156 +1,206 @@
-<!-- YAML front-matter schema: https://review.learn.microsoft.com/en-us/help/contribute/samples/process/onboarding?branch=main#supported-metadata-fields-for-readmemd -->
+# ai-chat-foundry-poc
 
-# Get Started with Chat Using Microsoft Foundry
+A domain-specific RAG chatbot built on Azure AI Foundry, customised for Melbourne logistics operations using Linfox Australia as the domain. Forked from [Azure-Samples/get-started-with-ai-chat](https://github.com/Azure-Samples/get-started-with-ai-chat) and extended with custom data ingestion, infrastructure fixes and systematic behaviour analysis.
 
-<div style="text-align:center;">
+Built as a portfolio project to demonstrate practical RAG development skills and investigate real RAG behaviour in a production-like environment.
 
-[**SOLUTION OVERVIEW**](#solution-overview) \| [**GETTING STARTED**](#getting-started) \| [**LOCAL DEVELOPMENT**](#local-development) \| [**RESOURCE CLEAN-UP**](#resource-clean-up) \|  [**GUIDANCE**](#guidance) \| [**DISCLAIMERS**](#disclaimers)
+---
 
-</div>
+## The Most Important Part of This Project
 
-**Note**: With any AI solutions you create using these templates, you are responsible for assessing all associated risks, and for complying with all applicable laws and safety standards. Learn more in the transparency documents for [Azure AI Search](https://learn.microsoft.com/en-us/azure/ai-foundry/responsible-ai/search/transparency-note?tabs=enrichment). 
+If you read one thing, read this:
 
-## Solution Overview
+### [RAG Behaviour Analysis Report](docs/rag-analysis.md)
 
-This solution deploys a web-based chat application with AI capabilities running in Azure Container App.
+This report documents 8 findings from systematic testing of the chatbot covering chunking failures, vector proximity, conversation history behaviour, prompt engineering and security vulnerabilities. Each finding was discovered through real testing, not theory.
 
-The application leverages Microsoft Foundry projects and Foundry Tools to provide intelligent chat functionality. It supports both direct AI model interaction and Retrieval-Augmented Generation (RAG) using Azure AI Search for knowledge retrieval from uploaded files, enabling it to generate responses with citations. The solution also includes built-in monitoring capabilities with tracing to ensure easier troubleshooting and optimized performance.
+It includes a structured investigation where GPT was temporarily asked to self-report exactly what it used to answer each question, turning a black box into a transparent debugging exercise. It documents how a user can inject false information into the system, how GPT carries it forward as fact, and why realistic-sounding injections are more dangerous than obvious ones.
 
-This solution creates an Microsoft Foundry project and Foundry Tools. More details about the resources can be found in the [resources](#resources) documentation. There are options to enable RAG, logging, tracing, and monitoring.
+This is the centrepiece of the project. The code is the vehicle. The analysis is the work.
 
-Instructions are provided for deployment through GitHub Codespaces, VS Code Dev Containers, and your local development environment.
+---
 
-### Solution Architecture
+## Chatbot in Action
 
-![Architecture diagram showing that user input is provided to the Azure Container App, which contains the app code. With user identity and resource access through managed identity, the input is used to form a response. The input and the Azure monitor are able to use the Azure resources deployed in the solution: Application Insights, Azure AI Project, Foundry Tools, Azure AI Hub, Storage account, Azure Container App, Container Registry, Key Vault, Log Analytics Workspace, and Search Service.](docs/images/architecture.png)
+Three questions tested in the same session showing real behaviour, not a sanitised demo:
 
-The app code runs in Azure Container Apps to process the user input and generate a response to the user. It leverages Azure AI projects and Foundry Tools, including the model and search service.
+<div align="center"><a href="docs/images/rag_analysis/chatbot_screenshot.png"><img src="docs/images/rag_analysis/chatbot_screenshot.png" width="80%"></a></div>
 
-### Key Features
+1. "What are the delivery zones?": correct delivery zones returned, but loading zones also bled in due to shared suburb names. Documented in [Part 2 of the analysis](docs/rag-analysis.md#part-2-naming-convention-testing).
+2. "What freight types does Linfox handle?": 3 of 4 returned with full confidence. Dangerous goods missing due to a chunking boundary. No error signal to the user. Documented in [Part 1](docs/rag-analysis.md#part-1-initial-testing-original-dataset-no-loading-zones).
+3. "What are the Sydney depot locations?": clean out of scope handling. GPT correctly stayed within Melbourne operations without being explicitly instructed to.
 
-• **[Knowledge Retrieval](./docs/RAG.md)**: The AI chat application supports Retrieval-Augmented Generation (RAG) using Azure AI Search to retrieve knowledge from uploaded files, enabling contextual responses with citations.
+---
 
-• **[Customizable AI Model Deployment](./docs/deploy_customization.md#customizing-model-deployments)**: The solution allows users to configure and deploy AI models, such as gpt-4o-mini, with options to adjust model capacity, deployment configurations, and knowledge retrieval methods.
+## What This Project Demonstrates
 
-• **[Built-in Monitoring and Tracing](./docs/other_features.md#tracing-and-monitoring)**: Integrated monitoring capabilities, including Azure Monitor and Application Insights, enable tracing and logging for easier troubleshooting and performance optimization.
+- Building and deploying a domain-specific RAG chatbot on Azure AI Foundry
+- Writing a custom Python embedding pipeline (`scripts/build_embeddings.py`) to ingest domain-specific data for RAG and semantic search
+- Identifying and fixing a blocking upstream bug that prevented the app from loading
+- Systematic investigation of RAG behaviour across 6 parts and 8 findings
+- Identifying prompt security vulnerabilities including information injection through real testing
+- Documenting findings clearly enough to present in a technical interview
 
-• **[Flexible Deployment Options](./docs/deployment.md)**: The solution supports deployment through GitHub Codespaces, VS Code Dev Containers, or local environments, providing flexibility for different development workflows.
+---
 
-Here is a screenshot showing the chatting web application with requests and responses between the system and the user:
+## Tech Stack
 
-![Screenshot of chatting web application showing requests and responses between assistants and the user.](docs/images/webapp_screenshot.png)
-
-**WARNING**: This template, the application code and configuration it contains, has been built to showcase Microsoft Azure specific services and tools. We strongly advise our customers not to make this code part of their production environments without implementing or enabling additional security features.  
-
-For a more comprehensive list of best practices and security recommendations for Intelligent Applications, [visit our official documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/).
-        
-## Getting Started
-
-### Quick Deploy
-
-| [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Azure-Samples/get-started-with-ai-chat) | [![Open in Dev Containers](https://img.shields.io/static/v1?style=for-the-badge&label=Dev%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/Azure-Samples/get-started-with-ai-chat) |
+| Component | Technology |
 |---|---|
+| AI Model | GPT-4o-mini (Azure AI Foundry) |
+| Embeddings | text-embedding-3-small (100 dimensions) |
+| Vector Search | Azure AI Search |
+| Backend | Python, Gunicorn, Azure Container Apps |
+| Frontend | React (Microsoft template) |
+| Infrastructure | Azure Bicep, Azure Developer CLI (azd) |
+| Data pipeline | Custom Python (`scripts/build_embeddings.py`) |
 
-Github Codespaces and Dev Containers both allow you to download and deploy the code for development. You can also continue with local development. Once you have selected your environment, [click here to launch the development and deployment guide](./docs/deployment.md)
+---
 
-**After deployment, try these [sample questions](./docs/sample_questions.md) to test your web application.**
+## Architecture
 
-## Local Development
+![RAG Query Flow](docs/images/rag_analysis/d1_rag_query_flow.png)
 
-For developers who want to run the application locally or customize the chat application:
+![Data Pipeline](docs/images/rag_analysis/d2_data_pipeline.png)
 
-• **[Local Development Guide](./docs/deployment.md#local-development)** - Set up a local development environment, customize the frontend and backend, modify AI model configurations, and test your changes locally.
+The system follows a standard RAG pattern: source text is split into 4-sentence chunks, each chunk embedded into a 100-dimensional vector, stored in Azure AI Search, and retrieved by similarity when a user asks a question. The top 5 chunks are injected into the GPT-4o-mini system prompt alongside conversation history.
 
-This guide covers:
+Full architecture details and behaviour findings are documented in the [RAG Analysis Report](docs/rag-analysis.md).
 
-• Environment setup and prerequisites
-• Running the development server locally  
-• Frontend customization and backend communication
-• AI model and RAG configuration
-• Embedding file upload
-• Testing and debugging your application
+---
 
-- **[Tracing and Monitoring](./docs/other_features.md#tracing-and-monitoring)** - View console logs in Azure portal and App Insights tracing in Microsoft Foundry for debugging and performance monitoring.
+## Custom Embedding Pipeline
 
-## Resource Clean-up
+The Microsoft template includes a built-in embedding process for its own sample documents. To ingest custom domain data (Linfox Melbourne logistics), a reusable Python script was built:
 
-To prevent incurring unnecessary charges, it's important to clean up your Azure resources after completing your work with the application.
+```
+scripts/build_embeddings.py
+```
 
-- **When to Clean Up:**
-  - After you have finished testing or demonstrating the application.
-  - If the application is no longer needed or you have transitioned to a different project or environment.
-  - When you have completed development and are ready to decommission the application.
+This script:
+- Reads `.txt` files from `src/static/data/`
+- Generates embeddings using `text-embedding-3-small`
+- Saves `embeddings.csv` to `src/api/data/`
+- Deletes the existing Azure Search index so it is recreated fresh on next deploy
 
-- **Deleting Resources:**
-  To delete all associated resources and shut down the application, execute the following command:
-  
-    ```bash
-    azd down
-    ```
+Built as a standalone reusable script rather than a one-time CLI command so the pipeline can be re-run whenever the knowledge base is updated or the embedding model changes, without manual steps.
 
-    Please note that this process may take up to 20 minutes to complete.
+---
 
-⚠️ Alternatively, you can delete the resource group directly from the Azure Portal to clean up resources.
+## Domain Data
 
-## Guidance
+Linfox Australia Melbourne logistics operations including depot locations, delivery zones, freight types (including ADG dangerous goods compliance), common delay reasons, driver shift times, escalation process and loading zones added for testing purposes.
 
-### Costs
+Source: `src/static/data/melbourne-logistics.txt`
 
-Pricing varies per region and usage, so it isn't possible to predict exact costs for your usage.
-The majority of the Azure resources used in this infrastructure are on usage-based pricing tiers.
-However, Azure Container Registry has a fixed cost per registry per day.
+---
 
-You can try the [Azure pricing calculator](https://azure.microsoft.com/en-us/pricing/calculator) for the resources:
+## Project Structure
 
-* Microsoft Foundry: Free tier. [Pricing](https://azure.microsoft.com/pricing/details/ai-studio/)
-* Azure AI Search: Standard tier, S1. Pricing is based on the number of documents and operations. [Pricing](https://azure.microsoft.com/pricing/details/search/)
-* Azure Storage Account: Standard tier, LRS. Pricing is based on storage and operations. [Pricing](https://azure.microsoft.com/pricing/details/storage/blobs/)
-* Foundry Tools: S0 tier, defaults to gpt-4o-mini and text-embedding-ada-002 models. Pricing is based on token count. [Pricing](https://azure.microsoft.com/pricing/details/cognitive-services/)
-* Azure Container App: Consumption tier with 0.5 CPU, 1GiB memory/storage. Pricing is based on resource allocation, and each month allows for a certain amount of free usage. [Pricing](https://azure.microsoft.com/pricing/details/container-apps/)
-* Azure Container Registry: Basic tier. [Pricing](https://azure.microsoft.com/pricing/details/container-registry/)
-* Log analytics: Pay-as-you-go tier. Costs based on data ingested. [Pricing](https://azure.microsoft.com/pricing/details/monitor/)
+```
+ai-chat-foundry-poc/
+├── docs/
+│   ├── rag-analysis.md              # RAG behaviour analysis report (read this)
+│   └── images/rag_analysis/         # Screenshots and diagrams from testing
+├── scripts/
+│   └── build_embeddings.py          # Custom embedding generation pipeline
+├── src/
+│   ├── api/
+│   │   ├── data/                    # embeddings.csv (auto-generated)
+│   │   └── routes.py                # RAG search and GPT integration
+│   └── static/data/
+│       └── melbourne-logistics.txt  # Domain knowledge base
+└── infra/
+    └── main.bicep                   # Azure infrastructure
+```
 
-⚠️ To avoid unnecessary costs, remember to take down your app if it's no longer in use,
-either by deleting the resource group in the Portal or running `azd down`.
+---
 
-### Security guidelines
+## Try It
 
-This template also uses [Managed Identity](https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/overview) for local development and deployment.
+The app is not permanently deployed due to Azure running costs. Two options:
 
-To ensure continued best practices in your own repository, we recommend that anyone creating solutions based on our templates ensure that the [Github secret scanning](https://docs.github.com/code-security/secret-scanning/about-secret-scanning) setting is enabled.
+**Request a demo:** Reach out via GitHub and a live session can be arranged in a short window.
 
-You may want to consider additional security measures, such as:
+**Deploy yourself:** Follow the steps below. Deployment takes around 25 minutes.
 
-- Enabling Microsoft Defender for Cloud to [secure your Azure resources](https://learn.microsoft.com/azure/defender-for-cloud/).
-- Protecting the Azure Container Apps instance with a [firewall](https://learn.microsoft.com/azure/container-apps/waf-app-gateway) and/or [Virtual Network](https://learn.microsoft.com/azure/container-apps/networking?tabs=workload-profiles-env%2Cazure-cli).
+---
 
-> **Important Security Notice** <br/>
-This template, the application code and configuration it contains, has been built to showcase Microsoft Azure specific services and tools. We strongly advise our customers not to make this code part of their production environments without implementing or enabling additional security features.  <br/><br/>
-For a more comprehensive list of best practices and security recommendations for Intelligent Applications, [visit our official documentation](https://learn.microsoft.com/en-us/azure/ai-foundry/).
+## Deploy
 
-### Resources
+### Prerequisites
 
-This template creates everything you need to get started with Microsoft Foundry:
+- Python 3.10+
+- Azure Developer CLI (`azd`)
+- Azure subscription
+- Node.js 18+
 
-| Resource | Description |
-|----------|-------------|
-| [Azure AI Project](https://learn.microsoft.com/azure/ai-studio/how-to/create-projects) | Provides a collaborative workspace for AI development with access to models, data, and compute resources |
-| [Azure OpenAI Service](https://learn.microsoft.com/azure/ai-services/openai/) | Powers the AI agents for conversational AI and intelligent search capabilities. Default models deployed are gpt-4o-mini, but any Azure AI models can be specified per the [documentation](docs/deploy_customization.md#customizing-model-deployments) |
-| [Azure Container Apps](https://learn.microsoft.com/azure/container-apps/) | Hosts and scales the web application with serverless containers |
-| [Azure Container Registry](https://learn.microsoft.com/azure/container-registry/) | Stores and manages container images for secure deployment |
-| [Storage Account](https://learn.microsoft.com/azure/storage/blobs/) | Provides blob storage for application data and file uploads |
-| [AI Search Service](https://learn.microsoft.com/azure/search/) | *Optional* - Enables hybrid search capabilities combining semantic and vector search |
-| [Application Insights](https://learn.microsoft.com/azure/azure-monitor/app/app-insights-overview) | *Optional* - Provides application performance monitoring, logging, and telemetry for debugging and optimization |
-| [Log Analytics Workspace](https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-workspace-overview) | *Optional* - Collects and analyzes telemetry data for monitoring and troubleshooting |
+### Steps
 
-## Disclaimers
+```powershell
+# Clone
+git clone https://github.com/deesk/ai-chat-foundry-poc.git
+cd ai-chat-foundry-poc
 
-To the extent that the Software includes components or code used in or derived from Microsoft products or services, including without limitation Microsoft Azure Services (collectively, “Microsoft Products and Services”), you must also comply with the Product Terms applicable to such Microsoft Products and Services. You acknowledge and agree that the license governing the Software does not grant you a license or other right to use Microsoft Products and Services. Nothing in the license or this ReadMe file will serve to supersede, amend, terminate or modify any terms in the Product Terms for any Microsoft Products and Services.
+# Virtual environment
+python -m venv .venv
+.venv\Scripts\activate
 
-You must also comply with all domestic and international export laws and regulations that apply to the Software, which include restrictions on destinations, end users, and end use. For further information on export restrictions, visit <https://aka.ms/exporting>.
+# Install dependencies
+pip install -r src/api/requirements.txt
 
-You acknowledge that the Software and Microsoft Products and Services (1) are not designed, intended or made available as a medical device(s), and (2) are not designed or intended to be a substitute for professional medical advice, diagnosis, treatment, or judgment and should not be used to replace or as a substitute for professional medical advice, diagnosis, treatment, or judgment. Customer is solely responsible for displaying and/or obtaining appropriate consents, warnings, disclaimers, and acknowledgements to end users of Customer’s implementation of the Online Services.
+# Build embeddings (run whenever knowledge base changes)
+python scripts/build_embeddings.py
 
-You acknowledge the Software is not subject to SOC 1 and SOC 2 compliance audits. No Microsoft technology, nor any of its component technologies, including the Software, is intended or made available as a substitute for the professional advice, opinion, or judgement of a certified financial services professional. Do not use the Software to replace, substitute, or provide professional financial advice or judgment.  
+# Deploy to Azure
+azd up
 
-BY ACCESSING OR USING THE SOFTWARE, YOU ACKNOWLEDGE THAT THE SOFTWARE IS NOT DESIGNED OR INTENDED TO SUPPORT ANY USE IN WHICH A SERVICE INTERRUPTION, DEFECT, ERROR, OR OTHER FAILURE OF THE SOFTWARE COULD RESULT IN THE DEATH OR SERIOUS BODILY INJURY OF ANY PERSON OR IN PHYSICAL OR ENVIRONMENTAL DAMAGE (COLLECTIVELY, “HIGH-RISK USE”), AND THAT YOU WILL ENSURE THAT, IN THE EVENT OF ANY INTERRUPTION, DEFECT, ERROR, OR OTHER FAILURE OF THE SOFTWARE, THE SAFETY OF PEOPLE, PROPERTY, AND THE ENVIRONMENT ARE NOT REDUCED BELOW A LEVEL THAT IS REASONABLY, APPROPRIATE, AND LEGAL, WHETHER IN GENERAL OR IN A SPECIFIC INDUSTRY. BY ACCESSING THE SOFTWARE, YOU FURTHER ACKNOWLEDGE THAT YOUR HIGH-RISK USE OF THE SOFTWARE IS AT YOUR OWN RISK.
+# Shutdown when done (prevents unnecessary charges)
+azd down --purge
+```
+
+---
+
+## Upstream Bug Fix
+
+A blocking bug was identified and fixed in this fork from the upstream Microsoft template.
+
+**Internal Server Error on first load** ([Issue #129](https://github.com/Azure-Samples/get-started-with-ai-chat/issues/129))
+
+After a successful `azd up` deployment, the app returned an Internal Server Error on every page load immediately. The root cause was a `TemplateResponse` syntax in `src/api/routes.py` incompatible with the current Starlette version on Python 3.13.
+
+Fixed by updating the argument format:
+
+```python
+# Before (broken)
+return templates.TemplateResponse(
+    "index.html",
+    {"request": request}
+)
+
+# After (fixed)
+return templates.TemplateResponse(
+    request=request,
+    name="index.html"
+)
+```
+
+---
+
+## Certifications
+
+- Microsoft Azure Fundamentals (AZ-900)
+- Microsoft Azure AI Fundamentals (AI-900)
+- Microsoft Azure AI Engineer Associate (AI-102)
+
+---
+
+## Author
+
+Sandesh | [GitHub: deesk](https://github.com/deesk)
+
+Melbourne, Australia.
+
+---
+
+*This project is a portfolio proof of concept. It is not affiliated with or endorsed by Linfox Australia.*
