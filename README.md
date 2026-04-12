@@ -168,6 +168,8 @@ Infrastructure accounted for 98% of spend. AI API calls (GPT-4o-mini + embedding
  
 See the full [Cost Analysis](docs/cost-analysis.md) for service breakdown, key observations and production considerations.
 
+---
+
 ## Upstream Bug Fix
 
 A blocking bug was identified and fixed in this fork from the upstream Microsoft template.

@@ -15,8 +15,10 @@ Average active usage approximately 2-3 hours per day with resources torn down at
 | Foundry Models (GPT-4o-mini + embeddings) | 2% | Consumption (per token) |
 | Storage + Log Analytics | <1% | Consumption |
 
+
+
 ![Azure Daily Cost by Service](images/rag_analysis/azure-cost-daily.png)
-*Daily cost by service from first deployment to full teardown*
+<div align="center"><em> <> Daily cost by service from first deployment to full teardown </b></em></div>
 
 ---
 
