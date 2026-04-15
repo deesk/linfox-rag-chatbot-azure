@@ -4,10 +4,9 @@
 
 [Executive Summary](#executive-summary) | [How RAG Works](#how-this-rag-system-works) | [Part 1](#part-1-initial-testing) | [Part 2](#part-2-naming-convention-testing) | [Part 3](#part-3-effect-of-minimal-prompting) | [Part 4](#part-4-investigation-context-ambiguity) | [Part 5](#part-5-system-prompt-evolution) | [Part 6](#part-6-prompt-security) | [Limitations](#limitations-and-solutions) | [Conclusion](#conclusion)
  
+---
 
 This report documents a systematic investigation of RAG behaviour conducted during the build of a domain-specific logistics chatbot on Azure AI Foundry. Six parts, 8 findings, each discovered through real testing with evidence and root cause analysis.
-
----
 
 <div align="center"><a href="images/rag_analysis/rag_inforgraph.png"><img src="images/rag_analysis/rag_inforgraph.png" width="80%"></a></div>
 
