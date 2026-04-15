@@ -69,6 +69,17 @@ azd up
 
 ---
 
+## Architecture
+<div align="center">
+  <img src="docs/images/rag_analysis/d1_rag_query_flow.png" width="700" alt="RAG Query Flow">
+</div>
+
+A standard RAG pipeline — user query is embedded, matched against the logistics knowledge base in Azure AI Search, top 5 chunks injected into GPT-4o-mini alongside conversation history to generate a response.
+
+Full architecture and data pipeline details in the [RAG Behaviour Analysis Report](docs/rag-analysis.md).
+
+---
+
 ## Key Findings
 
 RAG quality depends primarily on data structure, chunking strategy and prompt engineering, not the AI model itself.
