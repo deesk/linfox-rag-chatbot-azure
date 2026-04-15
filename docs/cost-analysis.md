@@ -1,4 +1,4 @@
-# Cost Analysis
+# Cost Analysis Report
 
 Total project cost: **AU$2.59** across 16 active development days (Mar 24 to Apr 8, 2026).
 Average active usage approximately 2-3 hours per day with resources torn down at end of each session.
