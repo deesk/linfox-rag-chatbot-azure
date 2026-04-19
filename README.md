@@ -10,7 +10,7 @@ A domain-specific RAG chatbot built on Azure AI Foundry, customised for Melbourn
 
 Forked from [Azure-Samples/get-started-with-ai-chat](https://github.com/Azure-Samples/get-started-with-ai-chat) and extended with custom data ingestion, infrastructure fixes and systematic behaviour analysis.
 
-The primary purpose of this project is not to build a production-grade chatbot. It is to investigate and experiment with RAG behaviour, how chunking boundaries, prompt versions, and retrieval configurations affect what the system actually does in real conditions. Linfox Melbourne logistics operations was chosen as the domain to make the failure modes operationally meaningful rather than theoretical.
+Built to investigate emergent RAG behaviour in a production-like environment — how chunking boundaries, prompt versions, and retrieval configurations interact to produce unexpected results in real conditions. Linfox Melbourne logistics operations was chosen as the domain to make the failure modes operationally meaningful rather than theoretical.
 
 ---
 
